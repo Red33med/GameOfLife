@@ -1,4 +1,4 @@
-﻿namespace GameOfLife;
+﻿namespace GameOfLife.Forms;
 
 partial class MainForm
 {
@@ -29,42 +29,45 @@ partial class MainForm
     /// </summary>
     private void InitializeComponent()
     {
-        button1 = new System.Windows.Forms.Button();
-        dataGridView1 = new System.Windows.Forms.DataGridView();
-        ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+        buttonGenerarGrupo = new System.Windows.Forms.Button();
+        panelMundo = new System.Windows.Forms.Panel();
         SuspendLayout();
         // 
-        // button1
+        // buttonGenerarGrupo
         // 
-        button1.Location = new System.Drawing.Point(28, 599);
-        button1.Name = "button1";
-        button1.Size = new System.Drawing.Size(222, 63);
-        button1.TabIndex = 0;
-        button1.Text = "Generar Cosos";
-        button1.UseVisualStyleBackColor = true;
-        button1.Click += button1_Click;
+        buttonGenerarGrupo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonGenerarGrupo.Location = new System.Drawing.Point(946, 39);
+        buttonGenerarGrupo.Name = "buttonGenerarGrupo";
+        buttonGenerarGrupo.Size = new System.Drawing.Size(223, 73);
+        buttonGenerarGrupo.TabIndex = 1;
+        buttonGenerarGrupo.Text = "Generar Grupo";
+        buttonGenerarGrupo.UseVisualStyleBackColor = true;
+        buttonGenerarGrupo.Click += buttonGenerarGrupo_Click;
         // 
-        // dataGridView1
+        // panelMundo
         // 
-        dataGridView1.Location = new System.Drawing.Point(12, 12);
-        dataGridView1.Name = "dataGridView1";
-        dataGridView1.Size = new System.Drawing.Size(1011, 571);
-        dataGridView1.TabIndex = 1;
+        panelMundo.Location = new System.Drawing.Point(12, 12);
+        panelMundo.Name = "panelMundo";
+        panelMundo.Size = new System.Drawing.Size(900, 600);
+        panelMundo.TabIndex = 2;
+        panelMundo.Paint += panelMundo_Paint;
         // 
         // MainForm
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(1035, 684);
-        Controls.Add(dataGridView1);
-        Controls.Add(button1);
+        ClientSize = new System.Drawing.Size(1195, 689);
+        Controls.Add(panelMundo);
+        Controls.Add(buttonGenerarGrupo);
+        MaximizeBox = false;
+        StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         Text = "MainForm";
-        ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
         ResumeLayout(false);
     }
 
-    private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.DataGridView dataGridView1;
+    private System.Windows.Forms.Panel panelMundo;
+
+    private System.Windows.Forms.Button buttonGenerarGrupo;
 
     #endregion
 }

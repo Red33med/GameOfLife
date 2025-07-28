@@ -2,6 +2,6 @@ namespace GameOfLife.Utils;
 
 public class NombreConSexo
 {
-    public string Nombre { get; set; }
-    public string Sexo { get; set; }
+    public required string  Nombre { get; set; }
+    public required string Sexo { get; set; }
 }

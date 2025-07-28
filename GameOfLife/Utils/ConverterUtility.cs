@@ -15,7 +15,7 @@ public class ConverterUtility
         };
     }
      
-    public static TipoSangre Parse(string valor)
+    public static TipoSangre ConvertirSangre(string valor)
     {
         return valor.Trim().ToUpper() switch
         {
@@ -25,8 +25,8 @@ public class ConverterUtility
             "B-" => TipoSangre.BNeg,
             "O+" => TipoSangre.OPos,
             "O-" => TipoSangre.ONeg,
-            "AB+" => TipoSangre.ABPos,
-            "AB-" => TipoSangre.ABNeg,
+            "AB+" => TipoSangre.AbPos,
+            "AB-" => TipoSangre.AbNeg,
             _ => throw new ArgumentException($"Tipo de sangre inválido: {valor}")
         };
     }
@@ -41,8 +41,8 @@ public class ConverterUtility
             TipoSangre.BNeg => "B-",
             TipoSangre.OPos => "O+",
             TipoSangre.ONeg => "O-",
-            TipoSangre.ABPos => "AB+",
-            TipoSangre.ABNeg => "AB-",
+            TipoSangre.AbPos => "AB+",
+            TipoSangre.AbNeg => "AB-",
             _ => throw new ArgumentOutOfRangeException()
         };
     }

@@ -3,10 +3,10 @@ namespace GameOfLife.Models;
 public class Coso
 {
     public Guid Codigo { get; set; } = Guid.NewGuid(); // ID que los identifica
-    public string Nombre1 { get; set; }
-    public string Nombre2 { get; set; }
-    public string Apellido1 { get; set; }
-    public string Apellido2 { get; set; }
+    public required string Nombre1 { get; set; }
+    public required string Nombre2 { get; set; }
+    public required string Apellido1 { get; set; }
+    public required string Apellido2 { get; set; }
     public int Edad { get; set; } = 1; // >1  Machos 70, Hembras 85
     public bool Trabaja { get; set; } 
     public double Salario { get; set; } // Si trabaja si no 0.
@@ -14,7 +14,7 @@ public class Coso
     public Sexo Sexo { get; set; } // Macho o  hembra
     public Point Posicion { get; set; } // Momentaneo depende de como lo haga
     public EstadoCivil EstadoCivil { get; set; }
-    public string TipoSangre { get; set; } // A+, A-, B+, B-, O+, O-, AB+, AB-
+    public TipoSangre TipoSangre { get; set; } // A+, A-, B+, B-, O+, O-, AB+, AB-
     public Estado Estado { get; set; } = Estado.Vivo;
     
     

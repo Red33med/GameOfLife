@@ -1,3 +1,5 @@
+using GameOfLife.Forms;
+
 namespace GameOfLife;
 
 static class Program
