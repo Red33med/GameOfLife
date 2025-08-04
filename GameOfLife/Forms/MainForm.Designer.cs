@@ -29,8 +29,10 @@ partial class MainForm
     /// </summary>
     private void InitializeComponent()
     {
+        components = new System.ComponentModel.Container();
         buttonGenerarGrupo = new System.Windows.Forms.Button();
         panelMundo = new System.Windows.Forms.Panel();
+        toolTipCoso = new System.Windows.Forms.ToolTip(components);
         SuspendLayout();
         // 
         // buttonGenerarGrupo
@@ -51,6 +53,8 @@ partial class MainForm
         panelMundo.Size = new System.Drawing.Size(900, 600);
         panelMundo.TabIndex = 2;
         panelMundo.Paint += panelMundo_Paint;
+        panelMundo.MouseClick += panelMundo_MouseClick;
+        panelMundo.MouseMove += panelMundo_MouseMove;
         // 
         // MainForm
         // 
@@ -64,6 +68,8 @@ partial class MainForm
         Text = "MainForm";
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.ToolTip toolTipCoso;
 
     private System.Windows.Forms.Panel panelMundo;
 

@@ -52,10 +52,10 @@ public class CosoGenerator
             
             Coso coso = new Coso
             {
-                Nombre1 = nombre1.Nombre,
-                Nombre2 = nombre2.Nombre,
-                Apellido1 = apellido1,
-                Apellido2 = apellido2,
+                Nombre1 = nombre1.Nombre ?? throw new InvalidOperationException("El nombre del coso no puede ser nulo"),
+                Nombre2 = nombre2.Nombre ?? throw new InvalidOperationException("El nombre del coso no puede ser nulo"),
+                Apellido1 = apellido1 ?? throw new InvalidOperationException("El apellido del coso no puede ser nulo"),
+                Apellido2 = apellido2 ?? throw new InvalidOperationException("El apellido del coso no puede ser nulo"),
                 Edad = Rnd.Next(18, 41),
                 Sexo = ConverterUtility.ConvertirSexo(nombre1.Sexo),
                 Trabaja = trabaja,

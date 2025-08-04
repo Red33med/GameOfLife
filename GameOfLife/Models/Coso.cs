@@ -2,11 +2,11 @@ namespace GameOfLife.Models;
 
 public class Coso
 {
-    public Guid Codigo { get; set; } = Guid.NewGuid(); // ID que los identifica
-    public required string Nombre1 { get; set; }
-    public required string Nombre2 { get; set; }
-    public required string Apellido1 { get; set; }
-    public required string Apellido2 { get; set; }
+    public  Guid Codigo { get; set; } = Guid.NewGuid(); // ID que los identifica
+    public required string Nombre1 { get; set; } = string.Empty;
+    public required string Nombre2 { get; set; } = string.Empty;
+    public required string Apellido1 { get; set; } = string.Empty;
+    public required string Apellido2 { get; set; } = string.Empty;
     public int Edad { get; set; } = 1; // >1  Machos 70, Hembras 85
     public bool Trabaja { get; set; } 
     public double Salario { get; set; } // Si trabaja si no 0.
@@ -33,6 +33,7 @@ public class Coso
 
     
     
-    public string NombreCompleto => $"{Nombre1} {Nombre2} {Apellido1} {Apellido2}";
+    // Trim ayuda a limpiar espacios vacios por si algun nombre o apellido terminan siendo una cadena vacia.
+    public string NombreCompleto => $"{Nombre1} {Nombre2} {Apellido1} {Apellido2}".Trim();
      
 }
