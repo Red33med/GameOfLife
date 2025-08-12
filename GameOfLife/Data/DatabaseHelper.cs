@@ -4,20 +4,28 @@ using GameOfLife.Models;
 namespace GameOfLife.Data;
 
 public static class DatabaseHelper
-{
-    private static readonly string DbPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "juego.db");
-    private static readonly string ConnectionString = $"Data Source={DbPath};";
+{ 
+    private static readonly string DbPath = InitializeDatabasePath();
+    private static readonly string ConnectionString = $"Data Source={DbPath};Mode=ReadWriteCreate;Cache=Shared;";
+
+    private static string InitializeDatabasePath()
+    {
+        var env = Environment.GetEnvironmentVariable("GAME_DB_PATH");
+        if (!string.IsNullOrWhiteSpace(env))
+        {
+            env = Environment.ExpandEnvironmentVariables(env);
+            return Path.GetFullPath(env);
+        }
+
+        var defaultPath = Path.Combine(AppContext.BaseDirectory, "Data", "juego.db");
+        var dir = Path.GetDirectoryName(defaultPath)!;
+        if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+        return Path.GetFullPath(defaultPath);
+    }
 
     static DatabaseHelper()
     {
-        // Asegura que la carpeta "Data" exista
-        var dataDirectory = Path.GetDirectoryName(DbPath);
-        if (!Directory.Exists(dataDirectory))
-        {
-            Directory.CreateDirectory(dataDirectory);
-        }
-            
-        CrearTabla();
+       CrearTabla();
     }
 
     public static void CrearTabla()
@@ -60,62 +68,83 @@ public static class DatabaseHelper
 
     public static void GuardarPoblacion(List<Coso> cosos)
     {
-        using (var connection = new SqliteConnection(ConnectionString))
+        ArgumentNullException.ThrowIfNull(cosos);
+        if (cosos.Count == 0)
+            return; // No hay nada que guardar
+    
+        try
         {
-            connection.Open();
-
-            using var transaction = connection.BeginTransaction();
-            
-            // Limpiamos la tabla antes de insertar
-            var deleteCmd = connection.CreateCommand();
-            deleteCmd.CommandText = "DELETE FROM Cosos";
-            deleteCmd.ExecuteNonQuery();
-
-            foreach (var coso in cosos)
+            using (var connection = new SqliteConnection(ConnectionString))
             {
-                var insertCmd = connection.CreateCommand();
-                insertCmd.CommandText = @"
-                    INSERT INTO Cosos (
-                        Codigo, Nombre1, Nombre2, Apellido1, Apellido2, Edad, Trabaja, Salario,
-                        EstadoAnimo, Sexo, PosicionX, PosicionY, EstadoCivil, TipoSangre, Estado,
-                        Vida, Ataque, Defensa, Arma, Resistencia, CodigoPareja, CodigoPadre, CodigoMadre
-                    ) VALUES (
-                        $codigo, $nombre1, $nombre2, $apellido1, $apellido2, $edad, $trabaja, $salario,
-                        $estadoAnimo, $sexo, $posicionX, $posicionY, $estadoCivil, $tipoSangre, $estado,
-                        $vida, $ataque, $defensa, $arma, $resistencia, $codigoPareja, $codigoPadre, $codigoMadre
-                    )";
-                
-                // Evita inyeccion SQL
-                insertCmd.Parameters.AddWithValue("$codigo", coso.Codigo.ToString());
-                insertCmd.Parameters.AddWithValue("$nombre1", coso.Nombre1 ?? "");
-                insertCmd.Parameters.AddWithValue("$nombre2", coso.Nombre2 ?? "");
-                insertCmd.Parameters.AddWithValue("$apellido1", coso.Apellido1 ?? "");
-                insertCmd.Parameters.AddWithValue("$apellido2", coso.Apellido2 ?? "");
-                insertCmd.Parameters.AddWithValue("$edad", coso.Edad);
-                insertCmd.Parameters.AddWithValue("$trabaja", coso.Trabaja ? 1 : 0);
-                insertCmd.Parameters.AddWithValue("$salario", coso.Salario);
-                insertCmd.Parameters.AddWithValue("$estadoAnimo", (int)coso.EstadoAnimo);
-                insertCmd.Parameters.AddWithValue("$sexo", (int)coso.Sexo);
-                insertCmd.Parameters.AddWithValue("$posicionX", coso.Posicion.X);
-                insertCmd.Parameters.AddWithValue("$posicionY", coso.Posicion.Y);
-                insertCmd.Parameters.AddWithValue("$estadoCivil", (int)coso.EstadoCivil);
-                insertCmd.Parameters.AddWithValue("$tipoSangre", (int)coso.TipoSangre);
-                insertCmd.Parameters.AddWithValue("$estado", (int)coso.Estado);
-                insertCmd.Parameters.AddWithValue("$vida", coso.Vida);
-                insertCmd.Parameters.AddWithValue("$ataque", coso.Ataque);
-                insertCmd.Parameters.AddWithValue("$defensa", coso.Defensa);
-                insertCmd.Parameters.AddWithValue("$arma", coso.Arma);
-                insertCmd.Parameters.AddWithValue("$resistencia", coso.Resistencia);
-                
-                // Manejar valores que pueden ser null
-                insertCmd.Parameters.AddWithValue("$codigoPareja", coso.CodigoPareja?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("$codigoPadre", coso.CodigoPadre?.ToString() ?? (object)DBNull.Value);
-                insertCmd.Parameters.AddWithValue("$codigoMadre", coso.CodigoMadre?.ToString() ?? (object)DBNull.Value);
+                connection.Open();
 
-                insertCmd.ExecuteNonQuery();  
+                using var transaction = connection.BeginTransaction();
+
+                // Limpiamos la tabla antes de insertar
+                using (var deleteCmd = connection.CreateCommand())
+                { 
+                    deleteCmd.CommandText = "DELETE FROM Cosos";
+                    deleteCmd.ExecuteNonQuery();
+                }
+
+                foreach (var coso in cosos)
+                {
+                    var insertCmd = connection.CreateCommand();
+                    insertCmd.CommandText = @"
+                        INSERT INTO Cosos (
+                            Codigo, Nombre1, Nombre2, Apellido1, Apellido2, Edad, Trabaja, Salario,
+                            EstadoAnimo, Sexo, PosicionX, PosicionY, EstadoCivil, TipoSangre, Estado,
+                            Vida, Ataque, Defensa, Arma, Resistencia, CodigoPareja, CodigoPadre, CodigoMadre
+                        ) VALUES (
+                            $codigo, $nombre1, $nombre2, $apellido1, $apellido2, $edad, $trabaja, $salario,
+                            $estadoAnimo, $sexo, $posicionX, $posicionY, $estadoCivil, $tipoSangre, $estado,
+                            $vida, $ataque, $defensa, $arma, $resistencia, $codigoPareja, $codigoPadre, $codigoMadre
+                        )";
+
+                    // Evita inyeccion SQL
+                    insertCmd.Parameters.AddWithValue("$codigo", coso.Codigo.ToString());
+                    insertCmd.Parameters.AddWithValue("$nombre1", coso.Nombre1 ?? "");
+                    insertCmd.Parameters.AddWithValue("$nombre2", coso.Nombre2 ?? "");
+                    insertCmd.Parameters.AddWithValue("$apellido1", coso.Apellido1 ?? "");
+                    insertCmd.Parameters.AddWithValue("$apellido2", coso.Apellido2 ?? "");
+                    insertCmd.Parameters.AddWithValue("$edad", coso.Edad);
+                    insertCmd.Parameters.AddWithValue("$trabaja", coso.Trabaja ? 1 : 0);
+                    insertCmd.Parameters.AddWithValue("$salario", coso.Salario);
+                    insertCmd.Parameters.AddWithValue("$estadoAnimo", (int)coso.EstadoAnimo);
+                    insertCmd.Parameters.AddWithValue("$sexo", (int)coso.Sexo);
+                    insertCmd.Parameters.AddWithValue("$posicionX", coso.Posicion.X);
+                    insertCmd.Parameters.AddWithValue("$posicionY", coso.Posicion.Y);
+                    insertCmd.Parameters.AddWithValue("$estadoCivil", (int)coso.EstadoCivil);
+                    insertCmd.Parameters.AddWithValue("$tipoSangre", (int)coso.TipoSangre);
+                    insertCmd.Parameters.AddWithValue("$estado", (int)coso.Estado);
+                    insertCmd.Parameters.AddWithValue("$vida", coso.Vida);
+                    insertCmd.Parameters.AddWithValue("$ataque", coso.Ataque);
+                    insertCmd.Parameters.AddWithValue("$defensa", coso.Defensa);
+                    insertCmd.Parameters.AddWithValue("$arma", coso.Arma);
+                    insertCmd.Parameters.AddWithValue("$resistencia", coso.Resistencia);
+
+                    // Manejar valores que pueden ser null
+                    insertCmd.Parameters.AddWithValue("$codigoPareja",
+                        coso.CodigoPareja?.ToString() ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("$codigoPadre",
+                        coso.CodigoPadre?.ToString() ?? (object)DBNull.Value);
+                    insertCmd.Parameters.AddWithValue("$codigoMadre",
+                        coso.CodigoMadre?.ToString() ?? (object)DBNull.Value);
+
+                    insertCmd.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
             }
-            
-            transaction.Commit();
+        }
+        catch (SqliteException ex)
+        {
+            Console.WriteLine($"Error SQLite: {ex.Message}");
+            throw new DataException($"Error al guardar población: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error inesperado: {ex.Message}", ex);
         }
     }
 
