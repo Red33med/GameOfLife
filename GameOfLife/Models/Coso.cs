@@ -30,9 +30,7 @@ public class Coso
     public Guid? CodigoPareja { get; set; }
     public Guid? CodigoPadre { get; set; }
     public Guid? CodigoMadre { get; set; }
-
-    
-    
+ 
     // Trim ayuda a limpiar espacios vacios por si algun nombre o apellido terminan siendo una cadena vacia.
     public string NombreCompleto => $"{Nombre1} {Nombre2} {Apellido1} {Apellido2}".Trim();
      
@@ -42,6 +40,8 @@ public class Coso
     public DateTime? FechaMuerte { get; set; }
     public List<Guid> HijosIds { get; set; } = new List<Guid>();
      
+    
+    
     public int EdadMaxima => Sexo == Sexo.Macho ? 70 : 85;
     
     public bool EsMayorDeEdad => Edad >= 18;
@@ -76,7 +76,7 @@ public class Coso
     public void ActualizarEstadoAnimo(List<Coso> poblacion)
     {
         // Si está emparejado -> Feliz
-        if (EstadoCivil == EstadoCivil.Emparejado)
+        if (EstadoCivil == EstadoCivil.Casado)
         {
             EstadoAnimo = EstadoAnimo.Feliz;
         }
@@ -117,21 +117,18 @@ public class Coso
         // El macho debe trabajar
         if (!macho.Trabaja)
             return false;
-            
+
         // Si la hembra trabaja, el salario del macho debe ser mayor o igual
-        if (hembra.Trabaja && macho.Salario < hembra.Salario)
-            return false;
-            
-        return true;
+        return !hembra.Trabaja || !(macho.Salario < hembra.Salario);
     }
     
     public void Emparejar(Coso pareja)
     {
-        EstadoCivil = EstadoCivil.Emparejado;
+        EstadoCivil = EstadoCivil.Casado;
         CodigoPareja = pareja.Codigo;
         EstadoAnimo = EstadoAnimo.Feliz;
         
-        pareja.EstadoCivil = EstadoCivil.Emparejado;
+        pareja.EstadoCivil = EstadoCivil.Casado;
         pareja.CodigoPareja = Codigo;
         pareja.EstadoAnimo = EstadoAnimo.Feliz;
     } 
