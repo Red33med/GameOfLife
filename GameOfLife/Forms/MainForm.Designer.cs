@@ -39,6 +39,9 @@ partial class MainForm
         buttonCine = new System.Windows.Forms.Button();
         buttonGuerra = new System.Windows.Forms.Button();
         buttonReset = new System.Windows.Forms.Button();
+        buttonAvanzarTiempo = new System.Windows.Forms.Button();
+        buttonDestruccionGlobal = new System.Windows.Forms.Button();
+        buttonResucitar = new System.Windows.Forms.Button();
         SuspendLayout();
         // 
         // buttonGenerarGrupo
@@ -82,6 +85,7 @@ partial class MainForm
         buttonGenerarHijos.TabIndex = 4;
         buttonGenerarHijos.Text = "Generar Hijos";
         buttonGenerarHijos.UseVisualStyleBackColor = true;
+        buttonGenerarHijos.Click += buttonGenerarHijos_Click;
         // 
         // buttonCovid
         // 
@@ -118,7 +122,8 @@ partial class MainForm
         // 
         // buttonReset
         // 
-        buttonReset.Location = new System.Drawing.Point(57, 636);
+        buttonReset.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonReset.Location = new System.Drawing.Point(27, 637);
         buttonReset.Name = "buttonReset";
         buttonReset.Size = new System.Drawing.Size(221, 41);
         buttonReset.TabIndex = 8;
@@ -126,11 +131,47 @@ partial class MainForm
         buttonReset.UseVisualStyleBackColor = true;
         buttonReset.Click += buttonReset_Click;
         // 
+        // buttonAvanzarTiempo
+        // 
+        buttonAvanzarTiempo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonAvanzarTiempo.Location = new System.Drawing.Point(266, 638);
+        buttonAvanzarTiempo.Name = "buttonAvanzarTiempo";
+        buttonAvanzarTiempo.Size = new System.Drawing.Size(212, 40);
+        buttonAvanzarTiempo.TabIndex = 9;
+        buttonAvanzarTiempo.Text = "Avanzar Tiempo";
+        buttonAvanzarTiempo.UseVisualStyleBackColor = true;
+        buttonAvanzarTiempo.Click += buttonAvanzarTiempo_Click;
+        // 
+        // buttonDestruccionGlobal
+        // 
+        buttonDestruccionGlobal.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonDestruccionGlobal.Location = new System.Drawing.Point(499, 637);
+        buttonDestruccionGlobal.Name = "buttonDestruccionGlobal";
+        buttonDestruccionGlobal.Size = new System.Drawing.Size(206, 41);
+        buttonDestruccionGlobal.TabIndex = 10;
+        buttonDestruccionGlobal.Text = "Destruccion Global";
+        buttonDestruccionGlobal.UseVisualStyleBackColor = true;
+        buttonDestruccionGlobal.Click += buttonDestruccionGlobal_Click;
+        // 
+        // buttonResucitar
+        // 
+        buttonResucitar.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonResucitar.Location = new System.Drawing.Point(723, 636);
+        buttonResucitar.Name = "buttonResucitar";
+        buttonResucitar.Size = new System.Drawing.Size(221, 41);
+        buttonResucitar.TabIndex = 11;
+        buttonResucitar.Text = "RESUCITAR";
+        buttonResucitar.UseVisualStyleBackColor = true;
+        buttonResucitar.Click += buttonResucitar_Click;
+        // 
         // MainForm
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         ClientSize = new System.Drawing.Size(1195, 689);
+        Controls.Add(buttonResucitar);
+        Controls.Add(buttonDestruccionGlobal);
+        Controls.Add(buttonAvanzarTiempo);
         Controls.Add(buttonReset);
         Controls.Add(buttonGuerra);
         Controls.Add(buttonCine);
@@ -139,11 +180,17 @@ partial class MainForm
         Controls.Add(buttonGenerarParejas);
         Controls.Add(panelMundo);
         Controls.Add(buttonGenerarGrupo);
-        MaximizeBox = false;
+        MaximizeBox = false; 
         StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         Text = "MainForm";
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.Button buttonResucitar;
+
+    private System.Windows.Forms.Button buttonDestruccionGlobal;
+
+    private System.Windows.Forms.Button buttonAvanzarTiempo;
 
     private System.Windows.Forms.Button buttonReset;
 

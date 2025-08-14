@@ -36,36 +36,38 @@ public static class DatabaseHelper
             connection.Open();
 
             var createTableCmd = connection.CreateCommand();
-            createTableCmd.CommandText = @"
-                    CREATE TABLE IF NOT EXISTS Cosos (
-                        Codigo TEXT PRIMARY KEY,
-                        Nombre1 TEXT NOT NULL,
-                        Nombre2 TEXT NOT NULL,
-                        Apellido1 TEXT NOT NULL,
-                        Apellido2 TEXT NOT NULL,
-                        Edad INTEGER NOT NULL,
-                        Trabaja INTEGER NOT NULL, -- 1 para true, 0 para false
-                        Salario REAL NOT NULL,
-                        EstadoAnimo INTEGER NOT NULL, -- Almacenamos el valor del enum
-                        Sexo INTEGER NOT NULL,
-                        PosicionX INTEGER NOT NULL,
-                        PosicionY INTEGER NOT NULL,
-                        EstadoCivil INTEGER NOT NULL,
-                        TipoSangre INTEGER NOT NULL,
-                        Estado INTEGER NOT NULL,
-                        Vida INTEGER NOT NULL,
-                        Ataque INTEGER NOT NULL,
-                        Defensa INTEGER NOT NULL,
-                        Arma INTEGER NOT NULL,
-                        Resistencia INTEGER NOT NULL,
-                        CodigoPareja TEXT, -- Puede ser NULL
-                        CodigoPadre TEXT,  -- Puede ser NULL
-                        CodigoMadre TEXT,  -- Puede ser NULL
-                        HaResucitado INTEGER DEFAULT 0, -- Nueva columna
-                        FechaNacimiento TEXT NOT NULL, -- Nueva columna
-                        FechaMuerte TEXT, -- Nueva columna, puede ser NULL
-                        HijosIds TEXT -- Nueva columna para almacenar IDs de hijos como JSON
-                    )";
+            createTableCmd.CommandText = """
+
+                                                             CREATE TABLE IF NOT EXISTS Cosos (
+                                                                 Codigo TEXT PRIMARY KEY,
+                                                                 Nombre1 TEXT NOT NULL,
+                                                                 Nombre2 TEXT NOT NULL,
+                                                                 Apellido1 TEXT NOT NULL,
+                                                                 Apellido2 TEXT NOT NULL,
+                                                                 Edad INTEGER NOT NULL,
+                                                                 Trabaja INTEGER NOT NULL, -- 1 para true, 0 para false
+                                                                 Salario REAL NOT NULL,
+                                                                 EstadoAnimo INTEGER NOT NULL, -- Almacenamos el valor del enum
+                                                                 Sexo INTEGER NOT NULL,
+                                                                 PosicionX INTEGER NOT NULL,
+                                                                 PosicionY INTEGER NOT NULL,
+                                                                 EstadoCivil INTEGER NOT NULL,
+                                                                 TipoSangre INTEGER NOT NULL,
+                                                                 Estado INTEGER NOT NULL,
+                                                                 Vida INTEGER NOT NULL,
+                                                                 Ataque INTEGER NOT NULL,
+                                                                 Defensa INTEGER NOT NULL,
+                                                                 Arma INTEGER NOT NULL,
+                                                                 Resistencia INTEGER NOT NULL,
+                                                                 CodigoPareja TEXT, -- Puede ser NULL
+                                                                 CodigoPadre TEXT,  -- Puede ser NULL
+                                                                 CodigoMadre TEXT,  -- Puede ser NULL
+                                                                 HaResucitado INTEGER DEFAULT 0, -- Nueva columna
+                                                                 FechaNacimiento TEXT NOT NULL, -- Nueva columna
+                                                                 FechaMuerte TEXT, -- Nueva columna, puede ser NULL
+                                                                 HijosIds TEXT -- Nueva columna para almacenar IDs de hijos como JSON
+                                                             )
+                                         """;
             createTableCmd.ExecuteNonQuery();
 
             // Verificar y agregar nuevas columnas si no existen (para compatibilidad con DB existentes)
@@ -97,18 +99,20 @@ public static class DatabaseHelper
                 foreach (var coso in cosos)
                 {
                     var insertCmd = connection.CreateCommand();
-                    insertCmd.CommandText = @"
-                            INSERT INTO Cosos (
-                                Codigo, Nombre1, Nombre2, Apellido1, Apellido2, Edad, Trabaja, Salario,
-                                EstadoAnimo, Sexo, PosicionX, PosicionY, EstadoCivil, TipoSangre, Estado,
-                                Vida, Ataque, Defensa, Arma, Resistencia, CodigoPareja, CodigoPadre, CodigoMadre,
-                                HaResucitado, FechaNacimiento, FechaMuerte, HijosIds
-                            ) VALUES (
-                                $codigo, $nombre1, $nombre2, $apellido1, $apellido2, $edad, $trabaja, $salario,
-                                $estadoAnimo, $sexo, $posicionX, $posicionY, $estadoCivil, $tipoSangre, $estado,
-                                $vida, $ataque, $defensa, $arma, $resistencia, $codigoPareja, $codigoPadre, $codigoMadre,
-                                $haResucitado, $fechaNacimiento, $fechaMuerte, $hijosIds
-                            )";
+                    insertCmd.CommandText = """
+
+                                                                        INSERT INTO Cosos (
+                                                                            Codigo, Nombre1, Nombre2, Apellido1, Apellido2, Edad, Trabaja, Salario,
+                                                                            EstadoAnimo, Sexo, PosicionX, PosicionY, EstadoCivil, TipoSangre, Estado,
+                                                                            Vida, Ataque, Defensa, Arma, Resistencia, CodigoPareja, CodigoPadre, CodigoMadre,
+                                                                            HaResucitado, FechaNacimiento, FechaMuerte, HijosIds
+                                                                        ) VALUES (
+                                                                            $codigo, $nombre1, $nombre2, $apellido1, $apellido2, $edad, $trabaja, $salario,
+                                                                            $estadoAnimo, $sexo, $posicionX, $posicionY, $estadoCivil, $tipoSangre, $estado,
+                                                                            $vida, $ataque, $defensa, $arma, $resistencia, $codigoPareja, $codigoPadre, $codigoMadre,
+                                                                            $haResucitado, $fechaNacimiento, $fechaMuerte, $hijosIds
+                                                                        )
+                                            """;
 
                     // Evita inyeccion SQL
                     insertCmd.Parameters.AddWithValue("$codigo", coso.Codigo.ToString());
