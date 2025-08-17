@@ -1,6 +1,7 @@
 using GameOfLife.Models;
 using GameOfLife.Utils;
 using System.Text.Json;
+using GameOfLife.Data;
 
 namespace GameOfLife.Forms;
 public partial class MainForm : Form
@@ -9,6 +10,7 @@ public partial class MainForm : Form
     private Coso? _ultimoCosoMostrado;
     private bool _grupoGenerado;
     private Random _random = new Random();
+    private bool _poblacionCargadaDeDB = false;
     
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
@@ -19,6 +21,9 @@ public partial class MainForm : Form
     {
         InitializeComponent();
         EnsureDataDirectoryExists();
+        CargarPoblacionInicial();
+
+        FormClosing += MainForm_FormClosing;
     } 
     
     private void EnsureDataDirectoryExists()
@@ -29,16 +34,252 @@ public partial class MainForm : Form
             Directory.CreateDirectory(dataPath);
         }
     }
+     
+    // Cargar población al iniciar
+    private void CargarPoblacionInicial()
+    {
+        try
+        {
+            // Intentar cargar población existente de la base de datos
+            var poblacionDB = DatabaseHelper.CargarPoblacion();
+            
+            if (poblacionDB.Count > 0)
+            {
+                _cosos = poblacionDB;
+                _poblacionCargadaDeDB = true;
+                _grupoGenerado = true;
+                MessageBox.Show($"Población cargada desde base de datos: {poblacionDB.Count} individuos", 
+                    "Carga exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                panelMundo.Invalidate();
+            }
+            else
+            {
+                _poblacionCargadaDeDB = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al cargar población: {ex.Message}\nInicia creando un nuevo grupo.", 
+                "Error de carga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            _poblacionCargadaDeDB = false;
+        }
+    }
     
+    // Guardar antes de cerrar
+    private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (_grupoGenerado && _cosos.Count > 0)
+        {
+            try
+            {
+                DatabaseHelper.GuardarPoblacion(_cosos);
+                MessageBox.Show($"Población guardada exitosamente: {_cosos.Count} individuos", 
+                    "Guardado exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                var result = MessageBox.Show($"Error al guardar población: {ex.Message}\n\n¿Desea cerrar sin guardar?", 
+                    "Error de guardado", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true; // Cancelar el cierre
+                }
+            }
+        }
+    }
+     
     // Botón: Generar Grupo Inicial
     private void buttonGenerarGrupo_Click(object sender, EventArgs e)
     {
-        if (_grupoGenerado) return;
+        if (_grupoGenerado) 
+        {
+            var result = MessageBox.Show("Ya hay un grupo generado. ¿Desea crear uno nuevo?", 
+                                       "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result == DialogResult.No) return;
+        }
                            
         _cosos = CosoGenerator.GenerarGrupoInicial(100);
         _grupoGenerado = true;
+        _poblacionCargadaDeDB = false;
         panelMundo.Invalidate();
     }
+    
+    // Exportar JSON con filtros
+    private void buttonExportarJSON_Click(object sender, EventArgs e)
+    {
+        if (!_grupoGenerado)
+        {
+            MessageBox.Show("Primero debes generar o cargar un grupo!", "Advertencia", 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            var exportData = new
+            {
+                // Filtros solicitados
+                CososMuertos = _cosos.Where(c => c.Estado == Estado.Muerto).Select(c => new
+                {
+                    c.Codigo,
+                    c.NombreCompleto,
+                    c.Edad,
+                    c.Sexo,
+                    c.FechaNacimiento,
+                    c.FechaMuerte,
+                    c.Posicion,
+                    TieneHijos = c.HijosIds.Count > 0,
+                    CantidadHijos = c.HijosIds.Count
+                }).ToList(),
+
+                CososVivos = _cosos.Where(c => c.Estado == Estado.Vivo).Select(c => new
+                {
+                    c.Codigo,
+                    c.NombreCompleto,
+                    c.Edad,
+                    c.Sexo,
+                    c.EstadoCivil,
+                    c.EstadoAnimo,
+                    c.Posicion,
+                    c.Vida,
+                    c.Trabaja,
+                    c.Salario,
+                    TieneHijos = c.HijosIds.Count > 0,
+                    CantidadHijos = c.HijosIds.Count,
+                    c.HaResucitado
+                }).ToList(),
+
+                CososConHijos = _cosos.Where(c => c.HijosIds.Count > 0).Select(c => new
+                {
+                    c.Codigo,
+                    c.NombreCompleto,
+                    c.Edad,
+                    c.Sexo,
+                    c.Estado,
+                    CantidadHijos = c.HijosIds.Count,
+                    HijosIds = c.HijosIds,
+                    c.Posicion,
+                    c.EstadoCivil
+                }).ToList(),
+
+                CososResucitados = _cosos.Where(c => c.HaResucitado).Select(c => new
+                {
+                    c.Codigo,
+                    c.NombreCompleto,
+                    c.Edad,
+                    c.Sexo,
+                    c.Estado,
+                    c.FechaNacimiento,
+                    c.FechaMuerte,
+                    c.Posicion,
+                    c.EstadoCivil,
+                    c.EstadoAnimo
+                }).ToList(),
+
+                // Estadísticas generales
+                Estadisticas = new
+                {
+                    TotalPoblacion = _cosos.Count,
+                    TotalVivos = _cosos.Count(c => c.Estado == Estado.Vivo),
+                    TotalMuertos = _cosos.Count(c => c.Estado == Estado.Muerto),
+                    TotalCasados = _cosos.Count(c => c.EstadoCivil == EstadoCivil.Casado && c.Estado == Estado.Vivo),
+                    TotalSolteros = _cosos.Count(c => c.EstadoCivil == EstadoCivil.Soltero && c.Estado == Estado.Vivo),
+                    TotalConHijos = _cosos.Count(c => c.HijosIds.Count > 0),
+                    TotalResucitados = _cosos.Count(c => c.HaResucitado),
+                    TotalAdultos = _cosos.Count(c => c.EsMayorDeEdad && c.Estado == Estado.Vivo),
+                    TotalMenores = _cosos.Count(c => !c.EsMayorDeEdad && c.Estado == Estado.Vivo),
+                    FechaExportacion = DateTime.Now
+                }
+            };
+
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+            saveDialog.FileName = $"poblacion_filtrada_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+
+            if (saveDialog.ShowDialog() == DialogResult.OK)
+            {
+                string json = JsonSerializer.Serialize(exportData, JsonOptions);
+                File.WriteAllText(saveDialog.FileName, json);
+                
+                MessageBox.Show($"Exportación exitosa a:\n{saveDialog.FileName}\n\n" +
+                              $"📊 RESUMEN DE FILTROS:\n" +
+                              $"• Cosos muertos: {exportData.CososMuertos.Count}\n" +
+                              $"• Cosos vivos: {exportData.CososVivos.Count}\n" +
+                              $"• Cosos con hijos: {exportData.CososConHijos.Count}\n" +
+                              $"• Cosos resucitados: {exportData.CososResucitados.Count}\n" +
+                              $"• Total población: {exportData.Estadisticas.TotalPoblacion}",
+                              "✅ Exportación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al exportar: {ex.Message}", "Error", 
+                           MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+    
+    // Guardar manualmente
+    private void buttonGuardarDB_Click(object sender, EventArgs e)
+    {
+        if (!_grupoGenerado)
+        {
+            MessageBox.Show("No hay población para guardar!", "Advertencia", 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            DatabaseHelper.GuardarPoblacion(_cosos);
+            MessageBox.Show($"Población guardada exitosamente en base de datos:\n{_cosos.Count} individuos", 
+                           "Guardado exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al guardar en base de datos: {ex.Message}", "Error", 
+                           MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    // NUEVO BOTÓN: Cargar desde DB
+    private void buttonCargarDB_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            var poblacionDB = DatabaseHelper.CargarPoblacion();
+            
+            if (poblacionDB.Count > 0)
+            {
+                if (_grupoGenerado)
+                {
+                    var result = MessageBox.Show($"Ya tienes una población activa.\n¿Desea reemplazarla con la población guardada ({poblacionDB.Count} individuos)?", 
+                                               "Confirmar carga", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.No) return;
+                }
+
+                _cosos = poblacionDB;
+                _grupoGenerado = true;
+                _poblacionCargadaDeDB = true;
+                panelMundo.Invalidate();
+                
+                MessageBox.Show($"Población cargada exitosamente desde base de datos:\n{poblacionDB.Count} individuos", 
+                               "Carga exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("No hay población guardada en la base de datos.", "Sin datos", 
+                               MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al cargar desde base de datos: {ex.Message}", "Error", 
+                           MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+    
 
     // Botón: Generar Parejas
     private void buttonGenerarParejas_Click(object sender, EventArgs e)
@@ -633,13 +874,20 @@ public partial class MainForm : Form
     // Botón: Reset/Reiniciar
     private void buttonReset_Click(object sender, EventArgs e)
     {
-        _cosos.Clear();
-        _grupoGenerado = false;
-        _ultimoCosoMostrado = null;
-        toolTipCoso.SetToolTip(panelMundo, "");
-        panelMundo.Invalidate();
+       var result = MessageBox.Show("¿Está seguro de que desea reiniciar?\nSe perderá la población actual (pero se mantendrá la última guardada en BD).", 
+                                   "Confirmar reinicio", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         
-        MessageBox.Show("Mundo reiniciado!", "Reset", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        if (result == DialogResult.Yes)
+        {
+            _cosos.Clear();
+            _grupoGenerado = false;
+            _poblacionCargadaDeDB = false;
+            _ultimoCosoMostrado = null;
+            toolTipCoso.SetToolTip(panelMundo, "");
+            panelMundo.Invalidate();
+            
+            MessageBox.Show("Mundo reiniciado!", "Reset", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 
     // Lógica para dibujar los cosos
@@ -820,4 +1068,26 @@ public partial class MainForm : Form
                 "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
+    
+    private void buttonTransferirCoso_Click(object sender, EventArgs e)
+    {
+        if (!_grupoGenerado || !_cosos.Any(c => c.Estado == Estado.Vivo))
+        {
+            MessageBox.Show(@"No tienes cosos vivos para transferir!", @"Sin cosos", 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        using (var transferForm = new TransferForm(_cosos))
+        {
+            transferForm.OnCosoReceived += (cosoRecibido) =>
+            {
+                _cosos.Add(cosoRecibido);
+                panelMundo.Invalidate();
+            };
+        
+            transferForm.ShowDialog(this);
+        }
+    }
+    
 }

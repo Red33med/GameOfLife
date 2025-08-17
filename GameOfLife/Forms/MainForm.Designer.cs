@@ -42,12 +42,16 @@ partial class MainForm
         buttonAvanzarTiempo = new System.Windows.Forms.Button();
         buttonDestruccionGlobal = new System.Windows.Forms.Button();
         buttonResucitar = new System.Windows.Forms.Button();
+        button1 = new System.Windows.Forms.Button();
+        button2 = new System.Windows.Forms.Button();
+        buttonExportarJSON = new System.Windows.Forms.Button();
+        buttonTransferirCoso = new System.Windows.Forms.Button();
         SuspendLayout();
         // 
         // buttonGenerarGrupo
         // 
         buttonGenerarGrupo.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonGenerarGrupo.Location = new System.Drawing.Point(946, 39);
+        buttonGenerarGrupo.Location = new System.Drawing.Point(946, 12);
         buttonGenerarGrupo.Name = "buttonGenerarGrupo";
         buttonGenerarGrupo.Size = new System.Drawing.Size(223, 73);
         buttonGenerarGrupo.TabIndex = 1;
@@ -68,7 +72,7 @@ partial class MainForm
         // buttonGenerarParejas
         // 
         buttonGenerarParejas.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonGenerarParejas.Location = new System.Drawing.Point(946, 144);
+        buttonGenerarParejas.Location = new System.Drawing.Point(946, 91);
         buttonGenerarParejas.Name = "buttonGenerarParejas";
         buttonGenerarParejas.Size = new System.Drawing.Size(223, 70);
         buttonGenerarParejas.TabIndex = 3;
@@ -79,7 +83,7 @@ partial class MainForm
         // buttonGenerarHijos
         // 
         buttonGenerarHijos.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonGenerarHijos.Location = new System.Drawing.Point(946, 240);
+        buttonGenerarHijos.Location = new System.Drawing.Point(946, 167);
         buttonGenerarHijos.Name = "buttonGenerarHijos";
         buttonGenerarHijos.Size = new System.Drawing.Size(223, 67);
         buttonGenerarHijos.TabIndex = 4;
@@ -90,7 +94,7 @@ partial class MainForm
         // buttonCovid
         // 
         buttonCovid.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonCovid.Location = new System.Drawing.Point(946, 335);
+        buttonCovid.Location = new System.Drawing.Point(946, 240);
         buttonCovid.Name = "buttonCovid";
         buttonCovid.Size = new System.Drawing.Size(223, 69);
         buttonCovid.TabIndex = 5;
@@ -101,7 +105,7 @@ partial class MainForm
         // buttonCine
         // 
         buttonCine.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonCine.Location = new System.Drawing.Point(946, 437);
+        buttonCine.Location = new System.Drawing.Point(946, 315);
         buttonCine.Name = "buttonCine";
         buttonCine.Size = new System.Drawing.Size(223, 68);
         buttonCine.TabIndex = 6;
@@ -112,7 +116,7 @@ partial class MainForm
         // buttonGuerra
         // 
         buttonGuerra.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
-        buttonGuerra.Location = new System.Drawing.Point(946, 531);
+        buttonGuerra.Location = new System.Drawing.Point(946, 389);
         buttonGuerra.Name = "buttonGuerra";
         buttonGuerra.Size = new System.Drawing.Size(223, 68);
         buttonGuerra.TabIndex = 7;
@@ -164,11 +168,59 @@ partial class MainForm
         buttonResucitar.UseVisualStyleBackColor = true;
         buttonResucitar.Click += buttonResucitar_Click;
         // 
+        // button1
+        // 
+        button1.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        button1.Location = new System.Drawing.Point(946, 556);
+        button1.Name = "button1";
+        button1.Size = new System.Drawing.Size(223, 68);
+        button1.TabIndex = 12;
+        button1.Text = "CARGAR DB";
+        button1.UseVisualStyleBackColor = true;
+        button1.Click += buttonCargarDB_Click;
+        // 
+        // button2
+        // 
+        button2.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        button2.Location = new System.Drawing.Point(946, 482);
+        button2.Name = "button2";
+        button2.Size = new System.Drawing.Size(223, 68);
+        button2.TabIndex = 13;
+        button2.Text = "GUARDAR DB";
+        button2.UseVisualStyleBackColor = true;
+        button2.Click += buttonGuardarDB_Click;
+        // 
+        // buttonExportarJSON
+        // 
+        buttonExportarJSON.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonExportarJSON.Location = new System.Drawing.Point(1089, 637);
+        buttonExportarJSON.Name = "buttonExportarJSON";
+        buttonExportarJSON.Size = new System.Drawing.Size(94, 41);
+        buttonExportarJSON.TabIndex = 14;
+        buttonExportarJSON.Text = "JSON";
+        buttonExportarJSON.UseVisualStyleBackColor = true;
+        buttonExportarJSON.Click += buttonExportarJSON_Click;
+        // 
+        // buttonTransferirCoso
+        // 
+        buttonTransferirCoso.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)0));
+        buttonTransferirCoso.Location = new System.Drawing.Point(974, 636);
+        buttonTransferirCoso.Name = "buttonTransferirCoso";
+        buttonTransferirCoso.Size = new System.Drawing.Size(94, 41);
+        buttonTransferirCoso.TabIndex = 15;
+        buttonTransferirCoso.Text = "WIFI";
+        buttonTransferirCoso.UseVisualStyleBackColor = true;
+        buttonTransferirCoso.Click += buttonTransferirCoso_Click;
+        // 
         // MainForm
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         ClientSize = new System.Drawing.Size(1195, 689);
+        Controls.Add(buttonTransferirCoso);
+        Controls.Add(buttonExportarJSON);
+        Controls.Add(button2);
+        Controls.Add(button1);
         Controls.Add(buttonResucitar);
         Controls.Add(buttonDestruccionGlobal);
         Controls.Add(buttonAvanzarTiempo);
@@ -180,11 +232,17 @@ partial class MainForm
         Controls.Add(buttonGenerarParejas);
         Controls.Add(panelMundo);
         Controls.Add(buttonGenerarGrupo);
-        MaximizeBox = false; 
+        MaximizeBox = false;
         StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         Text = "MainForm";
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.Button buttonTransferirCoso;
+
+    private System.Windows.Forms.Button buttonExportarJSON;
+
+    private System.Windows.Forms.Button button1;
 
     private System.Windows.Forms.Button buttonResucitar;
 
