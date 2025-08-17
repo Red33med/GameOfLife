@@ -11,7 +11,7 @@ public class CosoTransferManager
 {
     private TcpListener? _listener;
     private bool _isListening = false;
-    private const int Port = 8080;
+    private const int Port = 8080; // 52345
 
     public event Action<string>? OnMessageReceived;
     public event Action<Coso>? OnCosoReceived;
